@@ -3,7 +3,6 @@
 int main()
 {
     int num1, num2, lcm;
-
     printf("Enter two positive integers: ");
     scanf("%d %d", &num1, &num2);
 
