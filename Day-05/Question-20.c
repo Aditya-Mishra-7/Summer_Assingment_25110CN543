@@ -3,6 +3,7 @@
 int main()
 {
     int num, largestPrimeFactor = 1;
+    
     printf("Enter a number: ");
     scanf("%d", &num);
 
