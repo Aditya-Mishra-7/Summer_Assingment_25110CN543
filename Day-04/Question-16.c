@@ -3,7 +3,6 @@
 int main() 
 {
     int lower, upper, num, originalNum, remainder, result;
-    
     printf("Enter the lower and upper limits: ");
     scanf("%d %d", &lower, &upper);
     
