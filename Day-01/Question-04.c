@@ -1,4 +1,4 @@
-//Question-04 : Write a program to count digits in a number.
+//Question-04 : Write a program to Count digits in a number.
 #include <stdio.h>
 int main() 
 {
