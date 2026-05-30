@@ -1,6 +1,5 @@
 //Question-36 : Write a program to Print hollow square pattern.
 #include <stdio.h>
-
 int main()
 {
     int rows;
