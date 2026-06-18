@@ -22,6 +22,5 @@ int binarySearch(int arr[], int n, int target)
             right = mid - 1; 
         }
     }
-
     return -1; 
 }
