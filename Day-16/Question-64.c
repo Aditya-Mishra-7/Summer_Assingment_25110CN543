@@ -1,6 +1,5 @@
 //Question-64 : Write a program to remove duplicates from an array.
 #include <stdio.h>
-
 int main() 
 {
     int n;
