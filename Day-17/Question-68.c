@@ -52,6 +52,5 @@ int main()
     {
         printf("%d ", common[i]);
     }
-
-    return 0;
+     return 0;
 }
