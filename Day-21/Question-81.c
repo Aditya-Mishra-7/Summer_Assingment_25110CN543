@@ -1,6 +1,5 @@
 //Question-81 : Write a program to find string length without strlen().
 #include <stdio.h>
-
 int main() 
 {
     char str[100];
