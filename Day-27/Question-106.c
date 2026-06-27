@@ -48,7 +48,7 @@ void register_new_staff(StaffRecord registry[], int *active_total) {
     }
 
     registry[*active_total].unique_id = safe_id;
-
+    
     printf("Input Staff Legal Name: ");
     fgets(registry[*active_total].full_name, TEXT_BOUND, stdin);
     registry[*active_total].full_name[strcspn(registry[*active_total].full_name, "\r\n")] = '\0';
