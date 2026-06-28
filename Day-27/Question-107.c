@@ -1,209 +1,188 @@
 // Question-107 : Write a program to create salary management system.
 #include <stdio.h>
-#include <stdlib.h>
 #include <string.h>
 
-#define MAX_STAFF_SIZE 150
-#define CHAR_CAP 60
-#define ASSIGNED_TAX_RATE 0.14
+#define CAPACITY_LIMIT 75
 
-typedef struct
-{
-    int staff_id_code;
-    char designation_title[CHAR_CAP];
-    char staff_full_name[CHAR_CAP];
-    double base_remuneration;
-    double accumulated_bonuses;
-} CompensationLedger;
+typedef struct {
+    int staff_uid;
+    char full_name[60];
+    char post_title[40];
+    double base_income;
+    double rent_allowance;
+    double dearness_allowance;
+    double fund_deduction;
+    double govt_tax;
+    double total_gross;
+    double net_takehome;
+} PayrollRecord;
 
-void absolute_stream_drain()
-{
-    int byte_buffer;
-    while ((byte_buffer = getchar()) != '\n' && byte_buffer != EOF)
-        ;
-}
+void run_payroll_math(PayrollRecord *individual);
+void register_new_staff(PayrollRecord database[], int *current_size);
+void view_summary_sheet(const PayrollRecord database[], int current_size);
+void output_single_stub(const PayrollRecord database[], int current_size);
 
-int search_ledger_index(const CompensationLedger database[], int current_total, int search_id)
-{
-    for (int offset = 0; offset < current_total; offset++)
-    {
-        if (database[offset].staff_id_code == search_id)
-        {
-            return offset;
-        }
-    }
-    return -1;
-}
+int main(void) {
+    PayrollRecord enterprise_db[CAPACITY_LIMIT];
+    int total_registered = 0;
+    int admin_action;
 
-void enroll_payroll_profile(CompensationLedger database[], int *current_total)
-{
-    if (*current_total >= MAX_STAFF_SIZE)
-    {
-        printf("[Database Cap] Maximum allocation limits reached.\n");
-        return;
-    }
-
-    int numeric_id;
-    printf("Input Unique Personnel ID Code: ");
-    if (scanf("%d", &numeric_id) != 1)
-    {
-        printf("[Format Error] Invalid identification key.\n");
-        absolute_stream_drain();
-        return;
-    }
-    absolute_stream_drain();
-
-    if (search_ledger_index(database, *current_total, numeric_id) != -1)
-    {
-        printf("[Rejection] Entry blocked. Identity code already mapped.\n");
-        return;
-    }
-
-    database[*current_total].staff_id_code = numeric_id;
-
-    printf("Input Employee Full Name: ");
-    fgets(database[*current_total].staff_full_name, CHAR_CAP, stdin);
-    database[*current_total].staff_full_name[strcspn(database[*current_total].staff_full_name, "\r\n")] = '\0';
-
-    printf("Input Corporate Designation: ");
-    fgets(database[*current_total].designation_title, CHAR_CAP, stdin);
-    database[*current_total].designation_title[strcspn(database[*current_total].designation_title, "\r\n")] = '\0';
-
-    printf("Set Standard Base Salary: ");
-    if (scanf("%lf", &database[*current_total].base_remuneration) != 1)
-    {
-        printf("[Format Error] Execution aborted due to bad float formatting.\n");
-        absolute_stream_drain();
-        return;
-    }
-    absolute_stream_drain();
-
-    database[*current_total].accumulated_bonuses = 0.0;
-    (*current_total)++;
-    printf("[System Success] New ledger account securely generated.\n");
-}
-
-void credit_allowance_bonus(CompensationLedger database[], int current_total)
-{
-    int numerical_key;
-    printf("Verify target employee identity code: ");
-    scanf("%d", &numerical_key);
-    absolute_stream_drain();
-
-    int lookup_pos = search_ledger_index(database, current_total, numerical_key);
-    if (lookup_pos == -1)
-    {
-        printf("[Lookup Failure] Staff record not established in database.\n");
-        return;
-    }
-
-    double added_incentive;
-    printf("Enter supplemental allowance allocation amount: ");
-    if (scanf("%lf", &added_incentive) != 1)
-    {
-        printf("[Format Error] Injection aborted.\n");
-        absolute_stream_drain();
-        return;
-    }
-    absolute_stream_drain();
-
-    database[lookup_pos].accumulated_bonuses += added_incentive;
-    printf("[System Success] Added allowance allocated. Updated total bonuses: INR %.2f\n",
-           database[lookup_pos].accumulated_bonuses);
-}
-
-void generate_accounting_slip(const CompensationLedger database[], int current_total)
-{
-    int numerical_key;
-    printf("Enter identity code to print pay slip: ");
-    scanf("%d", &numerical_key);
-    absolute_stream_drain();
-
-    int lookup_pos = search_ledger_index(database, current_total, numerical_key);
-    if (lookup_pos == -1)
-    {
-        printf("[Lookup Failure] Target profile trace missing.\n");
-        return;
-    }
-
-    double gross_aggregate = database[lookup_pos].base_remuneration + database[lookup_pos].accumulated_bonuses;
-    double tax_withholding = gross_aggregate * ASSIGNED_TAX_RATE;
-    double true_net_disbursement = gross_aggregate - tax_withholding;
-
-    printf("\n############################################\n");
-    printf("          OFFICIAL STATEMENT OF EARNINGS       \n");
-    printf("############################################\n");
-    printf("Account Reference Code : %d\n", database[lookup_pos].staff_id_code);
-    printf("Legal Recipient Full   : %s\n", database[lookup_pos].staff_full_name);
-    printf("Designation Assignment : %s\n", database[lookup_pos].designation_title);
-    printf("--------------------------------------------\n");
-    printf("Base Earnings Baseline : INR %.2f\n", database[lookup_pos].base_remuneration);
-    printf("Extra Corporate Bonus  : INR %.2f\n", database[lookup_pos].accumulated_bonuses);
-    printf("Gross Evaluated Total  : INR %.2f\n", gross_aggregate);
-    printf("Tax Withheld (%d%%)     : INR %.2f\n", (int)(ASSIGNED_TAX_RATE * 100), tax_withholding);
-    printf("--------------------------------------------\n");
-    printf("NET PAYOUT AMOUNT      : INR %.2f\n", true_net_disbursement);
-    printf("############################################\n");
-}
-
-void display_total_corporate_outflow(const CompensationLedger database[], int current_total)
-{
-    double total_outflow_sum = 0.0;
-
-    for (int idx = 0; idx < current_total; idx++)
-    {
-        double gross = database[idx].base_remuneration + database[idx].accumulated_bonuses;
-        double tax = gross * ASSIGNED_TAX_RATE;
-        total_outflow_sum += (gross - tax);
-    }
-    printf("\n>>> Net Corporate Expenditure Summary (Total Outflow): INR %.2f <<<\n", total_outflow_sum);
-}
-
-int main()
-{
-    CompensationLedger institutional_vault[MAX_STAFF_SIZE];
-    int operational_record_count = 0;
-    int interactive_token_choice;
-
-    while (1)
-    {
-        printf("\n==== FINANCIAL PORTAL: PAYROLL MANAGEMENT ====\n");
-        printf(" 1. Setup Employee Financial Account\n");
-        printf(" 2. Allocate Allowance Bonus\n");
-        printf(" 3. Print Detailed Earnings Slip\n");
-        printf(" 4. View Net Corporate Expenditures\n");
-        printf(" 5. Disconnect Financial Terminal\n");
-        printf("==============================================\n");
-        printf("Selection Console Command -> ");
-
-        if (scanf("%d", &interactive_token_choice) != 1)
-        {
-            printf("[Alert] Non-integer option detected. Refreshing loop pipeline.\n");
-            absolute_stream_drain();
-            continue;
+    do {
+        printf("\n========================================");
+        printf("\n   ENTERPRISE PAYROLL SYSTEM CORE V1    ");
+        printf("\n========================================");
+        printf("\n [1] Enroll New Personnel Record");
+        printf("\n [2] Render Global Earnings Spreadsheet");
+        printf("\n [3] Extract Isolated Pay Stub Report");
+        printf("\n [4] Terminate System Terminal");
+        printf("\n========================================");
+        printf("\nExecute Command Choice (1-4): ");
+        
+        if (scanf("%d", &admin_action) != 1) {
+            printf("\nInput stream corrupted. Halting.\n");
+            break;
         }
 
-        switch (interactive_token_choice)
-        {
-        case 1:
-            enroll_payroll_profile(institutional_vault, &operational_record_count);
-            break;
-        case 2:
-            credit_allowance_bonus(institutional_vault, operational_record_count);
-            break;
-        case 3:
-            generate_accounting_slip(institutional_vault, operational_record_count);
-            break;
-        case 4:
-            display_total_corporate_outflow(institutional_vault, operational_record_count);
-            break;
-        case 5:
-            printf("[Shutdown] Port session disconnected safely. Gateway offline.\n");
-            return 0;
-        default:
-            printf("[Execution Error] Directive unknown. Restructure input path.\n");
+        switch (admin_action) {
+            case 1:
+                register_new_staff(enterprise_db, &total_registered);
+                break;
+            case 2:
+                view_summary_sheet(enterprise_db, total_registered);
+                break;
+            case 3:
+                output_single_stub(enterprise_db, total_registered);
+                break;
+            case 4:
+                printf("\nReleasing system resources. Session ended.\n");
+                break;
+            default:
+                printf("\nCommand sequence unrecognized. Re-enter selection.\n");
         }
-    }
+    } while (admin_action != 4);
 
     return 0;
+}
+
+void run_payroll_math(PayrollRecord *individual) {
+    
+    individual->rent_allowance = individual->base_income * 0.18;      
+    individual->dearness_allowance = individual->base_income * 0.22;  
+    individual->fund_deduction = individual->base_income * 0.11;      
+    
+    individual->total_gross = individual->base_income + individual->rent_allowance + individual->dearness_allowance;
+    
+    
+    if (individual->total_gross >= 65000.0) {
+        individual->govt_tax = individual->total_gross * 0.12;       
+    } else if (individual->total_gross >= 35000.0) {
+        individual->govt_tax = individual->total_gross * 0.07;       
+    } else {
+        individual->govt_tax = individual->total_gross * 0.02;       
+    }
+    
+    individual->net_takehome = individual->total_gross - (individual->fund_deduction + individual->govt_tax);
+}
+
+
+void register_new_staff(PayrollRecord database[], int *current_size) {
+    if (*current_size >= CAPACITY_LIMIT) {
+        printf("\nError: Central registry threshold reached.\n");
+        return;
+    }
+
+    PayrollRecord profile;
+    int clear_buffer;
+
+    printf("\nAssign Personnel Unique ID (Numeric): ");
+    scanf("%d", &profile.staff_uid);
+    
+    
+    while ((clear_buffer = getchar()) != '\n' && clear_buffer != EOF);
+
+    printf("Assign Legal Full Name: ");
+    fgets(profile.full_name, sizeof(profile.full_name), stdin);
+    profile.full_name[strcspn(profile.full_name, "\n")] = '\0'; 
+
+    printf("Assign Employment Assignment Title: ");
+    fgets(profile.post_title, sizeof(profile.post_title), stdin);
+    profile.post_title[strcspn(profile.post_title, "\n")] = '\0';
+
+    printf("Assign Initial Monthly Contract Base Pay: ");
+    scanf("%lf", &profile.base_income);
+
+
+    run_payroll_math(&profile);
+
+    
+    database[*current_size] = profile;
+    (*current_size)++;
+
+    printf("\nSuccess: Profile saved securely under UID Reference %d.\n", profile.staff_uid);
+}
+
+
+void view_summary_sheet(const PayrollRecord database[], int current_size) {
+    if (current_size == 0) {
+        printf("\nRegistry matrix is empty. No tracking nodes available.\n");
+        return;
+    }
+
+    printf("\n%-6s %-22s %-18s %-12s %-12s %-12s", "UID", "Employee Name", "Department/Post", "Base Pay", "Gross Pay", "Net Pay");
+    printf("\n=====================================================================================");
+    
+    for (int tracking_idx = 0; tracking_idx < current_size; tracking_idx++) {
+        printf("\n%-6d %-22s %-18s %-12.2f %-12.2f %-12.2f", 
+               database[tracking_idx].staff_uid, 
+               database[tracking_idx].full_name, 
+               database[tracking_idx].post_title, 
+               database[tracking_idx].base_income, 
+               database[tracking_idx].total_gross, 
+               database[tracking_idx].net_takehome);
+    }
+    printf("\n=====================================================================================\n");
+}
+
+
+void output_single_stub(const PayrollRecord database[], int current_size) {
+    if (current_size == 0) {
+        printf("\nRegistry lookup failed. Database is empty.\n");
+        return;
+    }
+
+    int targeted_uid;
+    int target_discovered = 0;
+
+    printf("\nProvide System UID to print earnings slip: ");
+    scanf("%d", &targeted_uid);
+
+    for (int locator = 0; locator < current_size; locator++) {
+        if (database[locator].staff_uid == targeted_uid) {
+            target_discovered = 1;
+            printf("\n------------------------------------------------");
+            printf("\n         OFFICIAL STATEMENT OF EARNINGS         ");
+            printf("\n------------------------------------------------");
+            printf("\n Staff UID Code    : %d", database[locator].staff_uid);
+            printf("\n Identity Name     : %s", database[locator].full_name);
+            printf("\n Active Assignment : %s", database[locator].post_title);
+            printf("\n................................................");
+            printf("\n CREDITED INCOME FLOWS:");
+            printf("\n  + Agreed Base Payment   : INR %.2f", database[locator].base_income);
+            printf("\n  + HRA Rent Allowance    : INR %.2f", database[locator].rent_allowance);
+            printf("\n  + DA Welfare Allowance  : INR %.2f", database[locator].dearness_allowance);
+            printf("\n  = RENDERED GROSS PAY    : INR %.2f", database[locator].total_gross);
+            printf("\n................................................");
+            printf("\n DEBITED FISCAL LIABILITIES:");
+            printf("\n  - Co-Investment Fund    : INR %.2f", database[locator].fund_deduction);
+            printf("\n  - Professional Income Tax: INR %.2f", database[locator].govt_tax);
+            printf("\n------------------------------------------------");
+            printf("\n DISBURSED NET TAKE-HOME  : INR %.2f", database[locator].net_takehome);
+            printf("\n------------------------------------------------\n");
+            break;
+        }
+    }
+
+    if (!target_discovered) {
+        printf("\nQuery Error: Record identifier %d does not match active records.\n", targeted_uid);
+    }
 }
