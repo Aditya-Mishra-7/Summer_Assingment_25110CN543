@@ -1,13 +1,14 @@
-//Question-107 : Write a program to create salary management system.
+// Question-107 : Write a program to create salary management system.
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 #define MAX_STAFF_SIZE 150
 #define CHAR_CAP 60
-#define ASSIGNED_TAX_RATE 0.14 
+#define ASSIGNED_TAX_RATE 0.14
 
-typedef struct {
+typedef struct
+{
     int staff_id_code;
     char designation_title[CHAR_CAP];
     char staff_full_name[CHAR_CAP];
@@ -15,36 +16,45 @@ typedef struct {
     double accumulated_bonuses;
 } CompensationLedger;
 
-void absolute_stream_drain() {
+void absolute_stream_drain()
+{
     int byte_buffer;
-    while ((byte_buffer = getchar()) != '\n' && byte_buffer != EOF);
+    while ((byte_buffer = getchar()) != '\n' && byte_buffer != EOF)
+        ;
 }
 
-int search_ledger_index(const CompensationLedger database[], int current_total, int search_id) {
-    for (int offset = 0; offset < current_total; offset++) {
-        if (database[offset].staff_id_code == search_id) {
+int search_ledger_index(const CompensationLedger database[], int current_total, int search_id)
+{
+    for (int offset = 0; offset < current_total; offset++)
+    {
+        if (database[offset].staff_id_code == search_id)
+        {
             return offset;
         }
     }
     return -1;
 }
 
-void enroll_payroll_profile(CompensationLedger database[], int *current_total) {
-    if (*current_total >= MAX_STAFF_SIZE) {
+void enroll_payroll_profile(CompensationLedger database[], int *current_total)
+{
+    if (*current_total >= MAX_STAFF_SIZE)
+    {
         printf("[Database Cap] Maximum allocation limits reached.\n");
         return;
     }
 
     int numeric_id;
     printf("Input Unique Personnel ID Code: ");
-    if (scanf("%d", &numeric_id) != 1) {
+    if (scanf("%d", &numeric_id) != 1)
+    {
         printf("[Format Error] Invalid identification key.\n");
         absolute_stream_drain();
         return;
     }
     absolute_stream_drain();
 
-    if (search_ledger_index(database, *current_total, numeric_id) != -1) {
+    if (search_ledger_index(database, *current_total, numeric_id) != -1)
+    {
         printf("[Rejection] Entry blocked. Identity code already mapped.\n");
         return;
     }
@@ -60,7 +70,8 @@ void enroll_payroll_profile(CompensationLedger database[], int *current_total) {
     database[*current_total].designation_title[strcspn(database[*current_total].designation_title, "\r\n")] = '\0';
 
     printf("Set Standard Base Salary: ");
-    if (scanf("%lf", &database[*current_total].base_remuneration) != 1) {
+    if (scanf("%lf", &database[*current_total].base_remuneration) != 1)
+    {
         printf("[Format Error] Execution aborted due to bad float formatting.\n");
         absolute_stream_drain();
         return;
@@ -72,21 +83,24 @@ void enroll_payroll_profile(CompensationLedger database[], int *current_total) {
     printf("[System Success] New ledger account securely generated.\n");
 }
 
-void credit_allowance_bonus(CompensationLedger database[], int current_total) {
+void credit_allowance_bonus(CompensationLedger database[], int current_total)
+{
     int numerical_key;
     printf("Verify target employee identity code: ");
     scanf("%d", &numerical_key);
     absolute_stream_drain();
 
     int lookup_pos = search_ledger_index(database, current_total, numerical_key);
-    if (lookup_pos == -1) {
+    if (lookup_pos == -1)
+    {
         printf("[Lookup Failure] Staff record not established in database.\n");
         return;
     }
 
     double added_incentive;
     printf("Enter supplemental allowance allocation amount: ");
-    if (scanf("%lf", &added_incentive) != 1) {
+    if (scanf("%lf", &added_incentive) != 1)
+    {
         printf("[Format Error] Injection aborted.\n");
         absolute_stream_drain();
         return;
@@ -94,18 +108,20 @@ void credit_allowance_bonus(CompensationLedger database[], int current_total) {
     absolute_stream_drain();
 
     database[lookup_pos].accumulated_bonuses += added_incentive;
-    printf("[System Success] Added allowance allocated. Updated total bonuses: INR %.2f\n", 
+    printf("[System Success] Added allowance allocated. Updated total bonuses: INR %.2f\n",
            database[lookup_pos].accumulated_bonuses);
 }
 
-void generate_accounting_slip(const CompensationLedger database[], int current_total) {
+void generate_accounting_slip(const CompensationLedger database[], int current_total)
+{
     int numerical_key;
     printf("Enter identity code to print pay slip: ");
     scanf("%d", &numerical_key);
     absolute_stream_drain();
 
     int lookup_pos = search_ledger_index(database, current_total, numerical_key);
-    if (lookup_pos == -1) {
+    if (lookup_pos == -1)
+    {
         printf("[Lookup Failure] Target profile trace missing.\n");
         return;
     }
@@ -130,10 +146,12 @@ void generate_accounting_slip(const CompensationLedger database[], int current_t
     printf("############################################\n");
 }
 
-void display_total_corporate_outflow(const CompensationLedger database[], int current_total) {
+void display_total_corporate_outflow(const CompensationLedger database[], int current_total)
+{
     double total_outflow_sum = 0.0;
-    
-    for (int idx = 0; idx < current_total; idx++) {
+
+    for (int idx = 0; idx < current_total; idx++)
+    {
         double gross = database[idx].base_remuneration + database[idx].accumulated_bonuses;
         double tax = gross * ASSIGNED_TAX_RATE;
         total_outflow_sum += (gross - tax);
@@ -141,12 +159,14 @@ void display_total_corporate_outflow(const CompensationLedger database[], int cu
     printf("\n>>> Net Corporate Expenditure Summary (Total Outflow): INR %.2f <<<\n", total_outflow_sum);
 }
 
-int main() {
+int main()
+{
     CompensationLedger institutional_vault[MAX_STAFF_SIZE];
     int operational_record_count = 0;
     int interactive_token_choice;
 
-    while (1) {
+    while (1)
+    {
         printf("\n==== FINANCIAL PORTAL: PAYROLL MANAGEMENT ====\n");
         printf(" 1. Setup Employee Financial Account\n");
         printf(" 2. Allocate Allowance Bonus\n");
@@ -156,23 +176,34 @@ int main() {
         printf("==============================================\n");
         printf("Selection Console Command -> ");
 
-        if (scanf("%d", &interactive_token_choice) != 1) {
+        if (scanf("%d", &interactive_token_choice) != 1)
+        {
             printf("[Alert] Non-integer option detected. Refreshing loop pipeline.\n");
             absolute_stream_drain();
             continue;
         }
 
-        switch (interactive_token_choice) {
-            case 1: enroll_payroll_profile(institutional_vault, &operational_record_count); break;
-            case 2: credit_allowance_bonus(institutional_vault, operational_record_count); break;
-            case 3: generate_accounting_slip(institutional_vault, operational_record_count); break;
-            case 4: display_total_corporate_outflow(institutional_vault, operational_record_count); break;
-            case 5:
-                printf("[Shutdown] Port session disconnected safely. Gateway offline.\n");
-                return 0;
-            default:
-                printf("[Execution Error] Directive unknown. Restructure input path.\n");
+        switch (interactive_token_choice)
+        {
+        case 1:
+            enroll_payroll_profile(institutional_vault, &operational_record_count);
+            break;
+        case 2:
+            credit_allowance_bonus(institutional_vault, operational_record_count);
+            break;
+        case 3:
+            generate_accounting_slip(institutional_vault, operational_record_count);
+            break;
+        case 4:
+            display_total_corporate_outflow(institutional_vault, operational_record_count);
+            break;
+        case 5:
+            printf("[Shutdown] Port session disconnected safely. Gateway offline.\n");
+            return 0;
+        default:
+            printf("[Execution Error] Directive unknown. Restructure input path.\n");
         }
     }
+
     return 0;
 }
